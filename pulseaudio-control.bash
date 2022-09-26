@@ -13,18 +13,18 @@ SINK_NICKNAME="Replaced by NODE_NICKNAME, see https://github.com/marioortizmaner
 
 # Defaults for configurable values, expected to be set by command-line arguments
 AUTOSYNC="no"
-COLOR_MUTED="%{F#6b6b6b}"
+COLOR_MUTED=""
 ICON_MUTED=
 ICON_NODE=
 NODE_TYPE="output"
 NOTIFICATIONS="no"
 OSD="no"
 NODE_NICKNAMES_PROP=
-VOLUME_STEP=2
+VOLUME_STEP=5
 VOLUME_MAX=130
-LISTEN_TIMEOUT=0.05
+LISTEN_TIMEOUT=0.1
 # shellcheck disable=SC2016
-FORMAT='$VOL_ICON ${VOL_LEVEL}%  $ICON_NODE $NODE_NICKNAME'
+FORMAT='$VOL_ICON $ICON_NODE $NODE_NICKNAME ${VOL_LEVEL}%'
 declare -A NODE_NICKNAMES
 declare -a ICONS_VOLUME
 declare -a NODE_BLACKLIST
@@ -69,7 +69,8 @@ function getCurVol() {
 # `nodeName`.
 function getNodeName() {
     nodeName=$(pactl list s${SINK_OR_SOURCE}s short | awk -v sink="$1" "{ if (\$1 == sink) {print \$2} }")
-    portName=$(pactl list s${SINK_OR_SOURCE}s | grep -e "S${SINK_OR_SOURCE} #" -e 'Active Port: ' | sed -n "/^S${SINK_OR_SOURCE} #$1\$/,+1p" | awk '/Active Port: / {print $3}')
+    # TODO: temporary fix for envy
+    portName=$(pactl list s${SINK_OR_SOURCE}s | grep -e "S${SINK_OR_SOURCE} #" -e 'Active Port: ' | sed -n "/^S${SINK_OR_SOURCE} #$1\$/,+1p" | awk '/Active Port: / {print}' | sed 's/.*Active Port: //' | sed 's/\[Out\] //')
 }
 
 
